@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Student Collab Hub - Collaborate on projects with your peers">
+  <title>Student Collab Hub - Sign In</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="auth-page">
+  <main class="container">
+    <div class="card auth-card">
+      <div class="auth-header">
+        <div class="auth-logo">SC</div>
+        <h1 class="auth-title" id="authTitle">Welcome Back</h1>
+        <p class="auth-subtitle" id="authSubtitle">Sign in to your account to continue</p>
+      </div>
+
+      <form class="auth-form" id="authForm" novalidate>
+        <div class="form-group" id="nameGroup" style="display: none;">
+          <label for="name" class="label">Full Name</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            class="input"
+            placeholder="Enter your full name"
+            autocomplete="name"
+            aria-describedby="nameError"
+          >
+          <span class="error-message" id="nameError" aria-live="polite"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="email" class="label">Email Address</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            class="input"
+            placeholder="you@example.com"
+            autocomplete="email"
+            required
+            aria-describedby="emailError"
+          >
+          <span class="error-message" id="emailError" aria-live="polite"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="label">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            class="input"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+            required
+            aria-describedby="passwordError"
+          >
+          <span class="error-message" id="passwordError" aria-live="polite"></span>
+        </div>
+
+        <div class="form-group" id="confirmGroup" style="display: none;">
+          <label for="confirmPassword" class="label">Confirm Password</label>
+          <input
+            type="password"
+            id="confirmPassword"
+            name="confirmPassword"
+            class="input"
+            placeholder="Confirm your password"
+            autocomplete="new-password"
+            aria-describedby="confirmError"
+          >
+          <span class="error-message" id="confirmError" aria-live="polite"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;" id="submitBtn">
+          <span id="btnText">Sign In</span>
+          <span class="spinner" id="btnSpinner" style="display: none;"></span>
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <p id="authToggleText">
+          Don't have an account?
+          <a href="#" id="authToggleLink">Sign Up</a>
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+  <script type="module" src="/js/pages/auth.js"></script>
+</body>
+</html>
