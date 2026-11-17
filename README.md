@@ -1,6 +1,29 @@
 # Student Collab Hub 🎓🚀
 
+[![Node.js](https://img.shields.io/badge/Node.js-20%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Express](https://img.shields.io/badge/Express.js-4.x-000000?logo=express&logoColor=white)](https://expressjs.com/)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0%2B-4479A1?logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6%2B-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Vercel](https://img.shields.io/badge/Deployed_on-Vercel-000000?logo=vercel&logoColor=white)](https://vercel.com/)
+
+> **Live Demo:** [Add live demo URL](#)  
+> **Demo Login Credentials:** `Email: add-demo-email` · `Password: add-demo-password`
+
 A modern, full-stack student task management and team collaboration hub. Designed for students and project teams to collaborate seamlessly with kanban task workflows, role management, project discussions, and activity tracking—wrapped in a sleek dark-slate SaaS interface.
+
+---
+
+## 📌 Project Overview
+
+Student Collab Hub is a full-stack collaboration workspace for student teams. It combines project organization, role-based membership, task tracking, and task-level discussions in one responsive dashboard, with JWT and session-based authentication backed by MySQL.
+
+## 🚀 Key Features
+
+- Organize work with a drag-and-drop Kanban workflow and task priorities.
+- Create projects, invite members, and manage owner, lead, and member roles.
+- Track project health with dashboard summaries for projects, tasks, and collaborations.
+- Discuss work in context with task comments and activity history.
+- Deploy the Express serverless app and static frontend to Vercel.
 
 ---
 
@@ -70,6 +93,21 @@ student-collab-hub/
 ├── vercel.json              # Vercel deployment configuration
 └── package.json
 ```
+
+---
+
+## 🗄️ Database Schema Summary
+
+The MySQL schema uses foreign keys, cascading deletes, and indexes for reliable project and task collaboration:
+
+| Table | Purpose |
+| --- | --- |
+| `users` | Stores student profiles, roles, credentials, and avatar details. |
+| `projects` | Stores project names, descriptions, and owners. |
+| `project_members` | Connects users to projects with `member` or `lead` roles. |
+| `tasks` | Stores project work items, statuses, priorities, assignees, reporters, and due dates. |
+| `task_comments` | Stores task discussions and activity context for team members. |
+| `sessions` | Persists Express sessions in MySQL for stateful authentication. |
 
 ---
 
