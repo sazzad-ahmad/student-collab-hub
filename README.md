@@ -1,240 +1,282 @@
-# Student Collab Hub 🎓🚀
+# Student Collab Hub
 
-[![Node.js](https://img.shields.io/badge/Node.js-20%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
-[![Express](https://img.shields.io/badge/Express.js-4.x-000000?logo=express&logoColor=white)](https://expressjs.com/)
-[![MySQL](https://img.shields.io/badge/MySQL-8.0%2B-4479A1?logo=mysql&logoColor=white)](https://www.mysql.com/)
-[![JavaScript](https://img.shields.io/badge/JavaScript-ES6%2B-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Vercel](https://img.shields.io/badge/Deployed_on-Vercel-000000?logo=vercel&logoColor=white)](https://vercel.com/)
+**Academic Project Tracker & Team Collaboration Assistant**
 
-> **Live Demo:** [Add live demo URL](#)  
-> **Demo Login Credentials:** `Email: add-demo-email` · `Password: add-demo-password`
-
-A modern, full-stack student task management and team collaboration hub. Designed for students and project teams to collaborate seamlessly with kanban task workflows, role management, project discussions, and activity tracking—wrapped in a sleek dark-slate SaaS interface.
+> 🚀 **Live App:** [https://student-collab-hub-hazel.vercel.app](https://student-collab-hub-hazel.vercel.app)
 
 ---
 
-## 📌 Project Overview
+## Overview
 
-Student Collab Hub is a full-stack collaboration workspace for student teams. It combines project organization, role-based membership, task tracking, and task-level discussions in one responsive dashboard, with JWT and session-based authentication backed by MySQL.
-
-## 🚀 Key Features
-
-- Organize work with a drag-and-drop Kanban workflow and task priorities.
-- Create projects, invite members, and manage owner, lead, and member roles.
-- Track project health with dashboard summaries for projects, tasks, and collaborations.
-- Discuss work in context with task comments and activity history.
-- Deploy the Express serverless app and static frontend to Vercel.
+Student Collab Hub is a full-stack web application that helps students organise coursework, manage projects, track tasks, and collaborate with teammates — all from a clean, responsive dark-mode interface. It is deployed as a Vercel Serverless application backed by TiDB Cloud Serverless (MySQL-compatible).
 
 ---
 
-## ✨ Features
+## Key Features
 
-- **📊 Interactive Kanban Board**: Drag, sort, and organize tasks across `To Do`, `In Progress`, and `Done` states with priority tags (`Low`, `Medium`, `High`, `Critical`).
-- **👥 Project Collaboration**: Invite project members by email, manage roles (`Owner`, `Lead`, `Member`), and track team contributions.
-- **💬 Task Discussions & Comments**: Threaded comments on individual tasks to keep project discussions organized and actionable.
-- **📈 Pro Dashboard Summary**: Real-time stats bar reporting Total Projects, Total Tasks, and Active Collaborations dynamically.
-- **🎨 Unified Sleek Dark Theme**: Cohesive dark slate UI aesthetic (`#0f172a` slate palette) across the entire application with crisp focus rings, glowing hover interactions, and responsive mobile sidebar.
-- **🔐 Dual Authentication**: Robust user authentication supporting both stateless **JWT Bearer tokens** and stateful **Express sessions** backed by MySQL.
-- **🛡️ Production Ready**: Pre-configured with Helmet security headers, CORS, rate-friendly pagination, input validation via `express-validator`, and automated SSL support for cloud databases.
+### 🔐 Authentication
+- **Register & Sign In** with email + password (bcrypt hashing)
+- Dual auth strategy: **JWT tokens** (sent in `Authorization` header) + **express-session** (cookie-based fallback)
+- **Password visibility toggle** on all password fields (eye icon, zero layout shift)
+- Input validation via `express-validator` on every endpoint
+- Protected routes — unauthenticated requests are redirected to the login page
+
+### 📋 Workspace Dashboard
+- Summary stats bar: **Total Projects**, **Total Tasks**, **Active Collaborations** — computed dynamically from live data
+- Project cards with monogram badge, role pill (Owner / Member), member count, and task count
+- **Search & filter** projects by name or keyword
+- One-click **"+ Create Project"** modal — form validates, inserts into TiDB, and refreshes the grid instantly
+
+### 📁 Project Management
+- Create, view, update, and delete projects (owner-only write operations)
+- **Member management**: invite collaborators by email or user ID; assign roles (`member` / `lead`)
+- Leads and owners can remove members; members can leave voluntarily
+
+### ✅ Task / Milestone Management
+- Full task CRUD within each project board (`project.html`)
+- Task fields: title, description, **status** (`todo` / `in_progress` / `done`), **priority** (`low` / `medium` / `high` / `critical`), assignee, reporter, due date
+- Tasks sorted by priority (critical → high → medium → low), then by creation date
+- Filtered views by status and priority; paginated API responses
+
+### 💬 Comments & Activity
+- Threaded comments per task with author details
+- Paginated comment list (oldest-first chronological order)
+- Comment authors can edit or delete their own comments
+
+### 🎨 UI / UX
+- **Responsive dark-mode UI** (`#0f172a` background, `#1e293b` card surfaces, `#3b82f6` primary accent) across all three pages
+- Single shared `public/css/style.css` — no framework dependencies
+- Toast notification system for success/error feedback
+- Auth card features the "Student Collab Hub" brand name and tagline
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack & Architecture
 
-### Backend
-- **Runtime**: [Node.js](https://nodejs.org/) (ES Modules)
-- **Framework**: [Express.js](https://expressjs.com/)
-- **Database**: [MySQL](https://www.mysql.com/) / [TiDB Cloud Serverless](https://tidbcloud.com/)
-- **Database Driver**: `mysql2/promise` with connection pooling and automated SSL negotiation
-- **Authentication**: `jsonwebtoken` (JWT) & `bcryptjs` password hashing
-- **Session Store**: `express-session` with `express-mysql-session`
-- **Security & Validation**: `helmet`, `cors`, `express-validator`
+| Layer | Technology |
+|-------|-----------|
+| **Frontend** | HTML5, CSS3 (custom dark-theme design system), Vanilla JavaScript (ES Modules) |
+| **Backend** | Node.js (v18+), Express 4, ES Module syntax (`"type": "module"`) |
+| **Auth** | JWT (`jsonwebtoken`), express-session + express-mysql-session |
+| **Database** | TiDB Cloud Serverless (MySQL-compatible) via `mysql2/promise` |
+| **Security** | Helmet, CORS, bcryptjs, input validation (express-validator) |
+| **Deployment** | Vercel Serverless Functions (`@vercel/node`) + Static (`@vercel/static`) |
+| **Dev tooling** | Nodemon, dotenv |
 
-### Frontend
-- **Markup**: Semantic HTML5 with accessibility attributes (`aria-*`)
-- **Styles**: Modern Vanilla CSS3 with CSS custom properties (Design Tokens), Flexbox, and CSS Grid
-- **Scripts**: Modular Vanilla JavaScript (ES6+ Modules)
-- **Icons**: Optimized inline SVG icons
+### Request Flow (Vercel)
+
+```
+Browser
+  │
+  ├─ /api/*  ──► Vercel Serverless Function (src/app.js)
+  │                └─► Express router → controller → TiDB Cloud
+  │
+  └─ /*      ──► Vercel Static (public/)
+```
+
+The MySQL connection pool is **lazily initialised** on first request so cold-start serverless invocations never fail before env vars are ready. SSL is automatically enabled when `DB_SSL=true` or `NODE_ENV=production`.
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 student-collab-hub/
-├── config/                  # Configuration modules
-│   ├── database.js          # MySQL pool connection with auto-SSL
-│   ├── env.js               # Validated environment variables
-│   └── session.js           # MySQL-backed session store
+├── config/
+│   ├── database.js          # Lazy MySQL pool + query helpers
+│   ├── env.js               # Validated env var loader
+│   └── session.js           # express-session + MySQL session store
+│
 ├── database/
-│   └── schema.sql           # Database schema & indexes
-├── public/                  # Frontend static assets
+│   └── schema.sql           # Full DB schema (users, projects, project_members, tasks, task_comments, sessions)
+│
+├── public/                  # Static frontend (served by Vercel)
+│   ├── index.html           # Login / Register page
+│   ├── dashboard.html       # Workspace dashboard
+│   ├── project.html         # Project board (tasks & members)
 │   ├── css/
-│   │   └── style.css        # Unified dark slate design system
-│   ├── js/
-│   │   ├── components/      # UI components (toast notifications, etc.)
-│   │   ├── pages/           # Page-level scripts (auth, dashboard, project)
-│   │   └── utils/           # API fetch wrapper with token handling
-│   ├── dashboard.html       # Projects dashboard & stats overview
-│   ├── index.html           # Authentication portal (Sign In / Register)
-│   └── project.html         # Interactive Kanban project board
-├── scripts/
-│   ├── init-db.js           # Database initialization utility
-│   └── verify-api.js        # End-to-end API verification suite
-├── src/
-│   ├── controllers/         # Request handlers (auth, project, task, comment)
-│   ├── middleware/          # Auth guards & error handlers
-│   ├── routes/              # Express API route definitions (/api/v1/*)
-│   ├── utils/               # Response formatters & helpers
-│   ├── validators/          # Express-validator schemas
-│   ├── app.js               # Serverless Express app export
-│   └── server.js            # Local server entry point (app.listen)
+│   │   └── style.css        # Unified dark-theme design system
+│   └── js/
+│       ├── components/
+│       │   └── toast.js     # Toast notification component
+│       ├── pages/
+│       │   ├── auth.js      # Auth page logic (login/register toggle)
+│       │   ├── dashboard.js # Dashboard data-fetching & rendering
+│       │   └── project.js   # Project board logic (tasks, members)
+│       └── utils/
+│           └── api.js       # Fetch wrapper (JWT header injection, error handling)
+│
+├── src/                     # Express backend
+│   ├── app.js               # Express app factory (exported for Vercel)
+│   ├── server.js            # Local dev entry point (calls app.listen)
+│   ├── controllers/
+│   │   ├── authController.js
+│   │   ├── projectController.js
+│   │   ├── taskController.js
+│   │   └── commentController.js
+│   ├── middleware/
+│   │   ├── auth.js          # requireAuth (JWT + session)
+│   │   └── errorHandler.js
+│   ├── routes/
+│   │   ├── authRoutes.js
+│   │   ├── projectRoutes.js
+│   │   ├── taskRoutes.js
+│   │   └── commentRoutes.js
+│   ├── services/
+│   │   └── authService.js   # register / login business logic
+│   ├── utils/
+│   │   ├── db.js            # paginate() helper
+│   │   ├── jwt.js           # Token generation & verification
+│   │   ├── password.js      # bcrypt wrappers
+│   │   └── responses.js     # Standardised API response helpers
+│   └── validators/          # express-validator rule sets
+│       ├── authValidator.js
+│       ├── projectValidator.js
+│       ├── taskValidator.js
+│       └── commentValidator.js
+│
 ├── .env.example             # Environment variable template
-├── vercel.json              # Vercel deployment configuration
-└── package.json
+├── .gitignore
+├── package.json
+├── vercel.json              # Vercel build & routing config
+└── README.md
 ```
 
 ---
 
-## 🗄️ Database Schema Summary
+## API Endpoints
 
-The MySQL schema uses foreign keys, cascading deletes, and indexes for reliable project and task collaboration:
-
-| Table | Purpose |
-| --- | --- |
-| `users` | Stores student profiles, roles, credentials, and avatar details. |
-| `projects` | Stores project names, descriptions, and owners. |
-| `project_members` | Connects users to projects with `member` or `lead` roles. |
-| `tasks` | Stores project work items, statuses, priorities, assignees, reporters, and due dates. |
-| `task_comments` | Stores task discussions and activity context for team members. |
-| `sessions` | Persists Express sessions in MySQL for stateful authentication. |
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| `POST` | `/api/v1/auth/register` | ❌ | Register a new user |
+| `POST` | `/api/v1/auth/login` | ❌ | Login and receive JWT |
+| `POST` | `/api/v1/auth/logout` | ✅ | Destroy session |
+| `GET`  | `/api/v1/auth/me` | ✅ | Get current user profile |
+| `GET`  | `/api/v1/projects` | ✅ | List projects (paginated, filterable) |
+| `POST` | `/api/v1/projects` | ✅ | Create a project |
+| `GET`  | `/api/v1/projects/:id` | ✅ | Get project + members |
+| `PUT`  | `/api/v1/projects/:id` | ✅ | Update project (owner only) |
+| `DELETE` | `/api/v1/projects/:id` | ✅ | Delete project (owner only) |
+| `POST` | `/api/v1/projects/:id/members` | ✅ | Add member by email or userId |
+| `DELETE` | `/api/v1/projects/:id/members/:userId` | ✅ | Remove member |
+| `GET`  | `/api/v1/tasks` | ✅ | List tasks for a project |
+| `POST` | `/api/v1/tasks` | ✅ | Create task |
+| `PUT`  | `/api/v1/tasks/:id` | ✅ | Update task |
+| `DELETE` | `/api/v1/tasks/:id` | ✅ | Delete task |
+| `GET`  | `/api/v1/comments` | ✅ | Get comments for a task |
+| `POST` | `/api/v1/comments` | ✅ | Add comment |
+| `PUT`  | `/api/v1/comments/:id` | ✅ | Edit comment (author only) |
+| `DELETE` | `/api/v1/comments/:id` | ✅ | Delete comment (author only) |
+| `GET`  | `/api/v1/health` | ❌ | Health check |
 
 ---
 
-## 💻 Local Setup Guide
+## Local Setup
 
-### 1. Prerequisites
-- **Node.js** (v18.x or v20.x recommended)
-- **MySQL Server** (via XAMPP, Docker, or native MySQL installation)
-- **Git**
+### Prerequisites
+- Node.js v18 or later
+- A running MySQL instance (local XAMPP / WAMP, or a TiDB Cloud free tier)
 
-### 2. Clone and Install
+### 1. Clone & Install
+
 ```bash
-git clone https://github.com/<your-username>/student-collab-hub.git
+git clone https://github.com/sazzad-ahmad/student-collab-hub.git
 cd student-collab-hub
 npm install
 ```
 
-### 3. Database Setup (Local XAMPP / MySQL)
-1. Start Apache and MySQL from the XAMPP Control Panel.
-2. Open phpMyAdmin or your MySQL CLI:
-   ```sql
-   CREATE DATABASE student_collab_hub CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-   ```
-3. Import the schema:
-   ```bash
-   mysql -u root -p student_collab_hub < database/schema.sql
-   ```
-   *(Or run `npm run db:init` if configured).*
+### 2. Configure Environment Variables
 
-### 4. Configure Environment Variables
-Copy `.env.example` to `.env`:
 ```bash
 cp .env.example .env
 ```
-Update `.env` with your local database credentials:
+
+Edit `.env` and fill in your values:
+
 ```env
+# Server
 PORT=3000
 NODE_ENV=development
 
+# Database
 DB_HOST=localhost
 DB_PORT=3306
 DB_USER=root
-DB_PASSWORD=
+DB_PASSWORD=your_password
 DB_NAME=student_collab_hub
-DB_SSL=false
+DB_SSL=false              # set to true for TiDB Cloud / any cloud MySQL
 
-SESSION_SECRET=dev_secret_change_in_production_1234567890
-JWT_SECRET=dev_jwt_secret_change_in_production_abcdefghijklmnopqrstuvwxyz
+# Session
+SESSION_SECRET=change_this_to_a_long_random_string
+SESSION_NAME=connect.sid
+SESSION_COOKIE_SECURE=false
+SESSION_COOKIE_HTTP_ONLY=true
+SESSION_COOKIE_SAME_SITE=lax
+SESSION_MAX_AGE=86400000
+
+# JWT
+JWT_SECRET=change_this_to_a_long_random_string
 JWT_EXPIRES_IN=7d
 
+# CORS (frontend origin)
 CLIENT_ORIGIN=http://localhost:3000
 ```
 
-### 5. Start the Application
+### 3. Create the Database Schema
+
+Run the schema SQL against your MySQL instance:
+
 ```bash
-npm start
-# Or for development with live reload:
-npm run dev
+# Using the MySQL CLI
+mysql -u root -p < database/schema.sql
 ```
 
-Visit **`http://localhost:3000`** in your browser.
+Or paste the contents of [`database/schema.sql`](./database/schema.sql) into your MySQL client (TablePlus, DBeaver, phpMyAdmin, etc.).
+
+### 4. Start the Development Server
+
+```bash
+npm run dev      # nodemon — auto-restarts on file changes
+# or
+npm start        # plain node
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-## ☁️ Production Deployment (Vercel + TiDB Cloud)
+## Deploying to Vercel + TiDB Cloud
 
-### Step 1: Provision TiDB Cloud Serverless MySQL (Free)
-1. Sign up at [TiDB Cloud](https://tidbcloud.com/).
-2. Create a free **Serverless Cluster**.
-3. In the cluster console, click **Connect**:
-   - Choose **Connect with: Node.js (mysql2)**.
-   - Note your `Host`, `Port` (typically `4000`), `User`, and `Password`.
-4. Open the SQL Editor in TiDB Cloud and run the contents of [`database/schema.sql`](database/schema.sql) to initialize the tables (`users`, `projects`, `project_members`, `tasks`, `task_comments`, `sessions`).
+### TiDB Cloud (database)
+1. Create a free **TiDB Cloud Serverless** cluster at [tidbcloud.com](https://tidbcloud.com).
+2. Copy the connection details (host, port, user, password, database name).
+3. Run `database/schema.sql` via the TiDB Cloud SQL editor or any MySQL client pointed at your cluster.
 
-### Step 2: Deploy to Vercel
-1. Push your repository to GitHub:
-   ```bash
-   git add .
-   git commit -m "feat: prepare Student Collab Hub for Vercel deployment"
-   git push origin main
-   ```
-2. Log in to [Vercel](https://vercel.com/) and click **Add New > Project**.
-3. Import your GitHub repository.
-4. In **Environment Variables**, configure:
-   | Key | Value | Description |
-   | --- | --- | --- |
-   | `NODE_ENV` | `production` | Enables production mode & automatic SSL |
-   | `DB_HOST` | `gateway01.us-east-1.prod.aws.tidbcloud.com` | TiDB Cloud Cluster Host |
-   | `DB_PORT` | `4000` | TiDB Cloud MySQL Port |
-   | `DB_USER` | `<prefix>.root` | TiDB Cloud Username |
-   | `DB_PASSWORD` | `<cluster-password>` | TiDB Cloud Password |
-   | `DB_NAME` | `student_collab_hub` | Database Name |
-   | `DB_SSL` | `true` | Enforces SSL for cloud database |
-   | `SESSION_SECRET` | `<random-32-char-string>` | Strong secret for express-session |
-   | `JWT_SECRET` | `<random-64-char-string>` | Strong secret for JWT signing |
-   | `CLIENT_ORIGIN` | `https://<your-project>.vercel.app` | Production app URL for CORS |
-5. Click **Deploy**. Vercel will automatically build the serverless functions (`src/app.js`) and publish the static frontend (`public/**`).
+### Vercel (hosting)
+1. Push this repository to GitHub.
+2. Import the repo in [vercel.com/new](https://vercel.com/new).
+3. Add all required environment variables in **Project → Settings → Environment Variables**:
+
+| Variable | Example value |
+|----------|--------------|
+| `DB_HOST` | `gateway01.ap-southeast-1.prod.aws.tidbcloud.com` |
+| `DB_PORT` | `4000` |
+| `DB_USER` | `your_tidb_user` |
+| `DB_PASSWORD` | `your_tidb_password` |
+| `DB_NAME` | `student_collab_hub` |
+| `DB_SSL` | `true` |
+| `JWT_SECRET` | *(long random string)* |
+| `JWT_EXPIRES_IN` | `7d` |
+| `SESSION_SECRET` | *(long random string)* |
+| `SESSION_COOKIE_SECURE` | `true` |
+| `SESSION_COOKIE_SAME_SITE` | `none` |
+| `CLIENT_ORIGIN` | `https://your-app.vercel.app` |
+| `NODE_ENV` | `production` |
+
+4. Deploy — Vercel automatically picks up `vercel.json` and routes `/api/*` to the Express serverless function and everything else to the `public/` static files.
 
 ---
 
-## 🔌 API Endpoints Reference
+## License
 
-All endpoints are prefixed with `/api/v1`:
-
-| Method | Endpoint | Description | Auth Required |
-| --- | --- | --- | --- |
-| `GET` | `/health` | Server health check | No |
-| `POST` | `/auth/register` | Register a new student account | No |
-| `POST` | `/auth/login` | Authenticate & retrieve JWT / session | No |
-| `GET` | `/auth/me` | Fetch authenticated user profile | Yes |
-| `POST` | `/auth/logout` | Terminate session | Yes |
-| `GET` | `/projects` | List user projects (paginated) | Yes |
-| `POST` | `/projects` | Create a new project | Yes |
-| `GET` | `/projects/:projectId` | Fetch single project & team members | Yes |
-| `PATCH` | `/projects/:projectId` | Update project details (Owner only) | Yes |
-| `DELETE` | `/projects/:projectId` | Delete project (Owner only) | Yes |
-| `POST` | `/projects/:projectId/members` | Add project member by email | Yes |
-| `DELETE` | `/projects/:projectId/members/:userId` | Remove project member | Yes |
-| `GET` | `/tasks/project/:projectId` | Get all tasks for a project | Yes |
-| `POST` | `/tasks` | Create a task | Yes |
-| `PATCH` | `/tasks/:taskId/status` | Update task status (`todo`, `in_progress`, `done`) | Yes |
-| `DELETE` | `/tasks/:taskId` | Delete a task | Yes |
-| `GET` | `/comments/task/:taskId` | Get comments for a task | Yes |
-| `POST` | `/comments` | Add a comment to a task | Yes |
-| `DELETE` | `/comments/:commentId` | Delete a comment | Yes |
-
----
-
-## 📄 License
-This project is licensed under the [MIT License](LICENSE).
+MIT © 2024 Student Collab Hub
