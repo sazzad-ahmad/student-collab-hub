@@ -116,11 +116,11 @@ export async function getProjectTasks(req, res) {
 
   try {
     const { projectId } = req.params;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 20;
+    const page = Math.max(1, Number.parseInt(req.query.page, 10) || 1);
+    const safeLimit = Math.max(1, Math.min(100, Number.parseInt(req.query.limit, 10) || 20));
     const status = req.query.status;
     const priority = req.query.priority;
-    const offset = (page - 1) * limit;
+    const safeOffset = (page - 1) * safeLimit;
 
     // Verify user is a project member
     const membership = await isProjectMember(projectId, req.user.id);
@@ -168,17 +168,17 @@ export async function getProjectTasks(req, res) {
            WHEN 'low' THEN 1 
          END DESC,
          t.created_at DESC
-       LIMIT ? OFFSET ?`,
-      [...params, limit, offset]
+       LIMIT ${safeLimit} OFFSET ${safeOffset}`,
+      params
     );
 
     sendSuccess(res, {
       tasks,
       pagination: {
         page,
-        limit,
+        limit: safeLimit,
         total,
-        totalPages: Math.ceil(total / limit),
+        totalPages: Math.ceil(total / safeLimit),
       },
     });
   } catch (err) {

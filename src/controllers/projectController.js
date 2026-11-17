@@ -59,10 +59,10 @@ export async function getAllProjects(req, res) {
   if (!handleValidation(req, res)) return;
 
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const page = Math.max(1, Number.parseInt(req.query.page, 10) || 1);
+    const safeLimit = Math.max(1, Math.min(100, Number.parseInt(req.query.limit, 10) || 10));
     const tag = req.query.tag?.trim();
-    const offset = (page - 1) * limit;
+    const safeOffset = (page - 1) * safeLimit;
 
     let whereClause = '';
     const params = [];
@@ -86,8 +86,8 @@ export async function getAllProjects(req, res) {
        JOIN users u ON p.owner_id = u.id
        ${whereClause}
        ORDER BY p.created_at DESC
-       LIMIT ? OFFSET ?`,
-      [...params, limit, offset]
+       LIMIT ${safeLimit} OFFSET ${safeOffset}`,
+      params
     );
 
     // Get member count for each project
@@ -111,9 +111,9 @@ export async function getAllProjects(req, res) {
       projects: projectsWithCounts,
       pagination: {
         page,
-        limit,
+        limit: safeLimit,
         total,
-        totalPages: Math.ceil(total / limit),
+        totalPages: Math.ceil(total / safeLimit),
       },
     });
   } catch (err) {

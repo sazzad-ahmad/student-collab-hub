@@ -106,9 +106,9 @@ export async function getTaskComments(req, res) {
 
   try {
     const { taskId } = req.params;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 50;
-    const offset = (page - 1) * limit;
+    const page = Math.max(1, Number.parseInt(req.query.page, 10) || 1);
+    const safeLimit = Math.max(1, Math.min(100, Number.parseInt(req.query.limit, 10) || 50));
+    const safeOffset = (page - 1) * safeLimit;
 
     // Get project ID from task to verify membership
     const projectId = await getProjectIdFromTask(taskId);
@@ -144,17 +144,17 @@ export async function getTaskComments(req, res) {
        JOIN users u ON tc.user_id = u.id
        WHERE tc.task_id = ?
        ORDER BY tc.created_at ASC
-       LIMIT ? OFFSET ?`,
-      [taskId, limit, offset]
+       LIMIT ${safeLimit} OFFSET ${safeOffset}`,
+      [taskId]
     );
 
     sendSuccess(res, {
       comments,
       pagination: {
         page,
-        limit,
+        limit: safeLimit,
         total,
-        totalPages: Math.ceil(total / limit),
+        totalPages: Math.ceil(total / safeLimit),
       },
     });
   } catch (err) {
