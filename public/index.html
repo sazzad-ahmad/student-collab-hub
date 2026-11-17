@@ -15,6 +15,9 @@
     <div class="card auth-card">
       <div class="auth-header">
         <div class="auth-logo">SC</div>
+        <p class="auth-brand-name">Student Collab Hub</p>
+        <p class="auth-brand-tagline">Your academic project tracker &amp; team collaboration assistant</p>
+        <div class="auth-brand-divider"></div>
         <h1 class="auth-title" id="authTitle">Welcome Back</h1>
         <p class="auth-subtitle" id="authSubtitle">Sign in to your account to continue</p>
       </div>
@@ -51,30 +54,54 @@
 
         <div class="form-group">
           <label for="password" class="label">Password</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            class="input"
-            placeholder="Enter your password"
-            autocomplete="current-password"
-            required
-            aria-describedby="passwordError"
-          >
+          <div class="password-input-wrapper">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              class="input"
+              placeholder="Enter your password"
+              autocomplete="current-password"
+              required
+              aria-describedby="passwordError"
+            >
+            <button type="button" class="password-toggle-btn" aria-label="Toggle password visibility" data-target="password">
+              <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              <svg class="eye-off-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
+          </div>
           <span class="error-message" id="passwordError" aria-live="polite"></span>
         </div>
 
         <div class="form-group" id="confirmGroup" style="display: none;">
           <label for="confirmPassword" class="label">Confirm Password</label>
-          <input
-            type="password"
-            id="confirmPassword"
-            name="confirmPassword"
-            class="input"
-            placeholder="Confirm your password"
-            autocomplete="new-password"
-            aria-describedby="confirmError"
-          >
+          <div class="password-input-wrapper">
+            <input
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              class="input"
+              placeholder="Confirm your password"
+              autocomplete="new-password"
+              aria-describedby="confirmError"
+            >
+            <button type="button" class="password-toggle-btn" aria-label="Toggle password visibility" data-target="confirmPassword">
+              <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              <svg class="eye-off-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
+          </div>
           <span class="error-message" id="confirmError" aria-live="polite"></span>
         </div>
 
@@ -96,5 +123,17 @@
   <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
 
   <script type="module" src="/js/pages/auth.js"></script>
+  <script>
+    // Password visibility toggle
+    document.querySelectorAll('.password-toggle-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const input = document.getElementById(btn.dataset.target);
+        const isPassword = input.type === 'password';
+        input.type = isPassword ? 'text' : 'password';
+        btn.querySelector('.eye-icon').style.display = isPassword ? 'none' : '';
+        btn.querySelector('.eye-off-icon').style.display = isPassword ? '' : 'none';
+      });
+    });
+  </script>
 </body>
 </html>
