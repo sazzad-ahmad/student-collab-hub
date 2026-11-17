@@ -6,11 +6,11 @@ const enableSSL =
   process.env.DB_SSL === 'true' ||
   (process.env.NODE_ENV === 'production' && process.env.DB_SSL !== 'false');
 
-let pool = null;
+let _pool = null;
 
 function initPool() {
-  if (!pool) {
-    pool = mysql.createPool({
+  if (!_pool) {
+    _pool = mysql.createPool({
       host: env.DB_HOST,
       port: env.DB_PORT,
       user: env.DB_USER,
@@ -24,7 +24,7 @@ function initPool() {
       ...(enableSSL ? { ssl: { rejectUnauthorized: true } } : {}),
     });
   }
-  return pool;
+  return _pool;
 }
 
 export async function testConnection() {
@@ -63,3 +63,19 @@ export async function transaction(callback) {
     conn.release();
   }
 }
+
+// Export a lazily‑initialized pool instance for imports that expect a direct `pool` object
+export const pool = {
+  async getConnection(...args) {
+    return (await initPool()).getConnection(...args);
+  },
+  async execute(...args) {
+    return (await initPool()).execute(...args);
+  },
+  async query(...args) {
+    return (await initPool()).query(...args);
+  },
+  async end(...args) {
+    return (await initPool()).end(...args);
+  },
+};
